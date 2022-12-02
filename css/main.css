@@ -1,0 +1,21 @@
+body{
+    margin:0;
+    padding: 0;
+}
+
+#board{
+    background-color: black;
+    height:100vh;
+    position: relative;
+}
+
+#shooter{
+    position: absolute;
+    border: 1px solid red;
+}
+
+.target{
+    position: absolute;
+    background-color: blue;
+    border: 3px solid white;
+}
