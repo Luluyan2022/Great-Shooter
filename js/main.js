@@ -1,40 +1,54 @@
 class Game{
     constructor(){
         this.shooter = null;
+        this.target = null;
         this.targetsArray = [];
     }
     start(){
         this.shooter = new Shooter();
-        this.detectShooterMove();
+        
+        this.detectShooterAction();
 
         //create targets
         setInterval(() => {
             const target = new Target();
             this.targetsArray.push(target);   
             
-        }, 3000);
+        }, 1000);
 
-        //keep creating moving targets 
+        //keep creating flashing targets 
         
         setInterval(() => {
 
             this.targetsArray.forEach(targetInstance => {
 
-                targetInstance.moveLeft();
+                // targetInstance.moveLeft();
 
+                //remove the targets which comes out of the screen
                  this.removeTargetIfOutside(targetInstance);
+
+                //remove the targets who were shot by shooter 
+                 this.removeshotTargets(targetInstance);
+
+                
+                this.removeTargetInCertainTime(targetInstance);
+                
                 
             });
     
-        }, 1000);     
+        }, 1100);     
     }
-    // shooter manipulate the game 
-    detectShooterMove() {
+
+    // shooter manipulate the game: move or shoot 
+    detectShooterAction() {
         document.addEventListener(`keydown`, e => {
             if (e.key === "ArrowLeft") {
                 this.shooter.moveLeft();
             } else if (e.key === "ArrowRight") {
                 this.shooter.moveright();
+            } else if (e.key === "ArrowUp"){
+                //console,console.log("I shot");
+                this.removeshotTargets();
             };
         });
     };
@@ -45,12 +59,24 @@ class Game{
             this.targetsArray.shift();
          } 
     }
-
+    //remove the targets after a certain time if they weren't shot
     removeTargetInCertainTime(targetInstance){
-        setInterval(() => {
-            targetInstance.newTarget.remove();
-            this.targetsArray.shift();
-        }, 500);
+        
+        targetInstance.newTarget.remove();
+        this.targetsArray.shift();
+       
+    }
+
+    // when the target was shot, remove it
+    removeshotTargets(targetInstance){
+
+        if(
+            this.shooter.positionX + (this.shooter.width / 2) > targetInstance.positionX 
+        && this.shooter.positionX + (this.shooter.width / 2) < targetInstance.positionX + targetInstance.width
+        ){
+            
+            targetInstance.newTarget.remove();           
+        }
     }
 }
 
@@ -60,8 +86,8 @@ class Game{
 class Shooter {
     constructor (){
         this.height = 10;
-        this.width = 6;
-        this.positionX = 50 - this.width / 2; 
+        this.width = 4;
+        this.positionX = 50 - (this.width / 2); 
         this.positionY = 0;
         this.newShooter = null;
         this.createNewShooter(); 
@@ -80,14 +106,26 @@ class Shooter {
        boardElm.appendChild(this.newShooter);
 
    }
+    //limit the moving area in the scope of the screen
      moveLeft (){
-        this.positionX --;
-        this.newShooter.style.left = this.positionX + "vw";
+        if(this.positionX >= 4){
+            this.positionX = this.positionX - 4;
+            this.newShooter.style.left = this.positionX + "vw";
+        } else {
+            this.positionX
+            this.newShooter.style.left = this.positionX + "vw";
+        }
      }
 
      moveright(){
-        this.positionX ++;
-        this.newShooter.style.left = this.positionX + 'vw';
+        if(this.positionX + this.width <= 96){
+            this.positionX = this.positionX + 4;
+            this.newShooter.style.left = this.positionX + 'vw';
+            console.log(this.positionX);
+        } else {
+            this.positionX
+            this.newShooter.style.left = this.positionX + 'vw';
+        }
      }
 
      
@@ -101,7 +139,7 @@ class Target{
     constructor(){
          this.height = 5;
          this.width = 5;
-         this.positionX = Math.round(Math.random()*100)  ; 
+         this.positionX = Math.round(Math.random()*95)  ; 
          this.positionY = 90;
          this.newTarget = null;
          this.createTarget();   
@@ -120,15 +158,15 @@ class Target{
          boardElm.appendChild(this.newTarget);
 
      }
-     moveLeft(){
+     /*moveLeft(){
          
          this.positionX = this.positionX - 12;
          this.newTarget.style.left = this.positionX + "vw";  
          
-     }  
+     }  */ 
 }                 
  
-const target = new Target();
+
 
 
 
