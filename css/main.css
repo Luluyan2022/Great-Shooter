@@ -19,3 +19,14 @@ body{
     background-color: blue;
     border: 3px solid white;
 }
+
+.obstacle{
+    position: absolute;
+    background-color: aqua;
+
+}
+
+#page-gameover{
+    text-align: center;
+    background-color:grey;
+}
