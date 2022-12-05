@@ -1,12 +1,34 @@
 body{
     margin:0;
     padding: 0;
+    
 }
 
 #board{
-    background-color: black;
     height:100vh;
     position: relative;
+    background-image: url('../img/2205_w026_n002_1909b_p1_1909.jpg');
+    background-size:100vw 100vh;
+    background-repeat: no-repeat;
+}
+
+#welcome{
+    background-image: url('../img/welcome.png');
+    background-size:40vw 60vh;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: 50% 50%;
+}
+
+
+  
+
+#start-button{
+    height: 200 px;
+    width: 530px;
+    position: relative;
+    left: 350px;
+    top: 450px;
 }
 
 #shooter{
@@ -15,18 +37,40 @@ body{
 }
 
 .target{
-    position: absolute;
-    background-color: blue;
-    border: 3px solid white;
+    position: absolute;    
 }
 
 .obstacle{
-    position: absolute;
-    background-color: aqua;
+    position: absolute;  
 
+}
+.bullet{
+    position: absolute;
+    background-color: blueviolet;
+}
+
+#sumPoints{
+    position: absolute;
+    background-color: chartreuse;
 }
 
 #page-gameover{
     text-align: center;
     background-color:grey;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#page-gameover h1{
+
+    font-size: 10vh;
+}
+#page-gameover a{
+    font-size: 5vh;
+    text-decoration: none;
+}
+
+.bombexp{
+   width: 50%;
+   height: 50%;
 }
