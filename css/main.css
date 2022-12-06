@@ -14,12 +14,12 @@ body{
 
 #welcome{
     background-image: url('../img/welcome.png');
-    background-size:40vw 60vh;
+    background-size:100vw 100vh;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: 50% 50%;
-}
 
+}
 
   
 
@@ -27,13 +27,13 @@ body{
     height: 200 px;
     width: 530px;
     position: relative;
-    left: 350px;
-    top: 450px;
+    left: 20vw;
+    top: 58vh;
 }
 
 #shooter{
     position: absolute;
-    border: 1px solid red;
+    
 }
 
 .target{
@@ -46,12 +46,18 @@ body{
 }
 .bullet{
     position: absolute;
-    background-color: blueviolet;
+    background-image: url("../img/bullet.png");
+    background-size: cover;
 }
 
 #sumPoints{
     position: absolute;
-    background-color: chartreuse;
+    
+}
+
+#sumPoints p span{
+   font-size: 20em;
+   color: rgb(13, 36, 13);
 }
 
 #page-gameover{

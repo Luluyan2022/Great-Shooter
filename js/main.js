@@ -10,8 +10,13 @@ class Game{
     start(){
         this.shooter = new Shooter();  
         this.board = new Calculateboard(); 
-             
+                  
         this.detectShooterAction();
+
+        setTimeout(() => {
+            document.getElementById('start-audio').play();
+          }, 500)
+          
 
         //create targets
         setInterval(() => {
@@ -19,7 +24,7 @@ class Game{
             target.createTarget();   
             this.targetsArray.push(target);             
             
-        }, 1000);
+        }, 2000);
 
         //create bombs 
         setInterval(() => {
@@ -27,11 +32,7 @@ class Game{
             bomb.createBomb();
             this.bombsArray.push(bomb); 
             
-        }, 500);
-
-       
-
-        
+        }, 1000);
 
         //keep creating flashing targets         
         setInterval(() => {
@@ -44,7 +45,7 @@ class Game{
                     this.targetsArray.shift();
                  } 
 
-                //remove the targets who were shot by shooter 
+                
                 
                 /* document.addEventListener(`keydown`, e => {
                     if (e.key === "ArrowUp" && this.shooter.positionX + (this.shooter.width / 2) > targetInstance.positionX
@@ -55,11 +56,12 @@ class Game{
                     })
                 */
 
-                //remove the targets after a certain time if they weren't shot
+                //remove the targets and bombs after a certain time if they weren't shot
                 setTimeout(() => {
                     targetInstance.newTarget.remove();
-                    this.targetsArray.shift();
-                },1000);
+                    this.targetsArray.shift();                   
+
+                },2000);
 
                 });         
              
@@ -74,7 +76,11 @@ class Game{
                     bombInstance.newBomb.remove();
                     this.bombsArray.shift();
                  } 
-               
+                // prevent too many bombs on the screen
+                 setTimeout(() => {
+                    bombInstance.newBomb.remove();
+                    this.bombsArray.shift();
+                },200);
             });  
 
         }, 1500);
@@ -88,33 +94,41 @@ class Game{
                 bulletInstance.moveTop();
 
                 //limit the moving scope of the bullets
-                if (bulletInstance.positionY + bulletInstance.height >= 100) {
-                    bulletInstance.newBomb.remove();
-                    this.bulletsArray.shift();
-                };
+                // if (bulletInstance.positionY + bulletInstance.height >= 100) {
+                //     bulletInstance.newBullet.remove();
+                //     this.bulletsArray.shift();
+                // };
 
-                //detect collision with targets
-                if(bulletInstance.positionX < targetInstance.positionX + targetInstance.width  &&
-                    bulletInstance.positionX + bulletInstance.width > targetInstance.positionX && 
-                    bulletInstance.positionY < targetInstance.positionY + targetInstance.height &&
-                    bulletInstance.positionY + bulletInstance.height > targetInstance.positionY
-                    ){
-                      //console.log("collision detected!");
-                      this.calculateSumPoints();  
+                // //detect collision with targets
+                this.targetsArray.forEach(targetInstance =>{
+                    if (bulletInstance.positionX < targetInstance.positionX + targetInstance.width &&
+                        bulletInstance.positionX + bulletInstance.width > targetInstance.positionX &&
+                        bulletInstance.positionY < targetInstance.positionY + targetInstance.height &&
+                        bulletInstance.positionY + bulletInstance.height > targetInstance.positionY
+                    ) {
+                        console.log("collision detected!");
+                        //this.calculateSumPoints(); 
+                        //remove the targets who were shot by shooter and the bullets                     
+                        targetInstance.newTarget.remove();                        
+                        bulletInstance.newBullet.remove();
+                        document.getElementById('shot-audio').play();
                     };
+                })
                 
-
+                this.bombsArray.forEach(bombInstance =>{
                 //detect collision with bombs 
                 if(bulletInstance.positionX < bombInstance.positionX + bombInstance.width  &&
                     bulletInstance.positionX + bulletInstance.width > bombInstance.positionX && 
                     bulletInstance.positionY < bombInstance.positionY + bombInstance.height &&
                     bulletInstance.positionY + bulletInstance.height > bombInstance.positionY)
-                {
-                    location.href = `gameOver.html`;
+                {   
+                    document.getElementById('exploded-audio').play();
+                    setTimeout(() => {location.href = `gameOver.html`},2000); 
                 }
+            })
 
             });
-        }, 1000);
+        }, 100);
       
     } 
 
@@ -130,18 +144,19 @@ class Game{
             }  //shoot the bullets 
             else if(e.key === "ArrowUp"){
                 //1. create a new instance of the class Bullet
-                const bullet = new Bullet;               
+                const bullet = new Bullet(this.shooter.positionX);               
                 //2. push that instance to the array of buttets
                 this.bulletsArray.push(bullet);
             }                   
         });  
-               
+    }       
             
-    /*calculateSumPoints(){
-      this.points = this.points + 10;
-      this.calculateboard.innerHTML = this.points;
-    }*/
-    }
+    //  calculateSumPoints(thisPoints) {
+
+    //   this.points = this.points + 10;
+    //   this.calculateboard.innerHTML = "<p><span>${'this.points'}</span></p>"
+    // }
+    
      
     
 }
@@ -151,8 +166,8 @@ class Game{
 //creat a player 
 class Shooter {
     constructor (){
-        this.height = 10;
-        this.width = 4;
+        this.height = 25;
+        this.width = 10;
         this.positionX = 50 - (this.width / 2); 
         this.positionY = 0;
         this.newShooter = null;
@@ -163,6 +178,8 @@ class Shooter {
         this.newShooter = document.createElement(`div`);
        //add content
         this.newShooter.id = "shooter";
+        this.newShooter.style.backgroundImage = "url(./img/shooter.png)";
+        this.newShooter.style.backgroundSize = "cover";
         this.newShooter.style.width = this.width + "vw";
         this.newShooter.style.height = this.height + "vh";
         this.newShooter.style.bottom = this.positionY + "vh";
@@ -178,7 +195,7 @@ class Shooter {
             this.positionX = this.positionX - 4;
             this.newShooter.style.left = this.positionX + "vw";
         } else {
-            this.positionX
+            this.positionX;
             this.newShooter.style.left = this.positionX + "vw";
         }
      }
@@ -189,7 +206,7 @@ class Shooter {
             this.newShooter.style.left = this.positionX + 'vw';
             //console.log(this.positionX);
         } else {
-            this.positionX
+            this.positionX;
             this.newShooter.style.left = this.positionX + 'vw';
         }
      }  
@@ -201,10 +218,10 @@ class Shooter {
 
 class Target{
     constructor(){
-         this.height = 300;
-         this.width = 200;
-         this.positionX = Math.round(Math.random()*85)  ; 
-         this.positionY = 50;
+         this.height = 10;
+         this.width = 4;
+         this.positionX = Math.round(Math.random()*75 + 10)  ; 
+         this.positionY = Math.round(Math.random()*40 + 35);
          this.newTarget = null;
          
      }
@@ -215,8 +232,10 @@ class Target{
          this.newTarget.className = "target";
          this.newTarget.style.backgroundImage = "url(./img/target.png)";
          this.newTarget.style.backgroundSize = "cover";
-         this.newTarget.style.width = this.width + "px";
-         this.newTarget.style.height = this.height + "px";
+         this.newTarget.style.width = this.width + "vw";
+         this.newTarget.style.height = this.height + "vh";
+         this.newTarget.style.border = "thick solid white"
+
          this.newTarget.style.left = this.positionX + "vw";
          this.newTarget.style.bottom = this.positionY + "vh";
          
@@ -231,9 +250,9 @@ class Target{
 //create obstacles-Bombs
 class Bomb {
     constructor() {
-       this.width = 100;
-       this.height = 100;
-       this.positionX = Math.round(Math.random() * 95);
+       this.width = 30;
+       this.height = 30;
+       this.positionX = Math.round(Math.random() * 90);
        this.positionY = Math.round(Math.random() * 40 + 20);
        this.newBomb = null;
       
@@ -245,6 +264,7 @@ class Bomb {
        this.newBomb.style.backgroundSize = "cover";
        this.newBomb.style.width = this.width + "px";
        this.newBomb.style.height = this.height + "px";
+       //this.newBomb.style.border = "thick solid #0000FF"
        this.newBomb.style.left = this.positionX + "vw";
        this.newBomb.style.bottom = this.positionY + "vh";
        const boardElm = document.getElementById("board");
@@ -258,28 +278,28 @@ class Bomb {
 
 //create bullet
 class Bullet{
-    constructor(){
+    constructor(shooterPositionX){
         this.newBullet = null;
-        this.width = 100;
-        this.height = 100;
-        this.positionX = 0;
-        this.positionY = 0;
+        this.width = 2;
+        this.height = 8;
+        this.positionX = shooterPositionX;
+        this.positionY = 25;
         this.createBullet();
     }
     createBullet(){
-        const newBullet = document.createElement('div');
-        this.newBullet.style.backgroundImage = "url(./img/bullet.png)";
+        this.newBullet = document.createElement('div');
         this.newBullet.className = "bullet";
-        this.newBullet.style.backgroundSize = "cover";
-        this.newBullet.style.width = this.width + "px";
-        this.newBullet.style.height = this.height + "px";
-        this.newBullet.style.left = this.shooter.positionX + "vw";
+        this.newBullet.style.width = this.width + "vw";
+        this.newBullet.style.height = this.height + "vh";
+        this.newBullet.style.left = this.positionX + "vw";
         this.newBullet.style.bottom = this.positionY + 'vh';
+        //this.newBullet.style.border = "thick solid #0000FF"
+
         const boardElm = document.getElementById("board");
         boardElm.appendChild(this.newBullet); 
     }
     moveTop(){
-        this.positionY = this.positionY + 5;
+        this.positionY = this.positionY + 2;
         this.newBullet.style.bottom = this.positionY + "vh";
     }
 }
@@ -288,15 +308,17 @@ class Bullet{
 class Calculateboard{
     constructor(){
         this.width = 15;
-        this.height = 10;
-        this.positionX = 0;
-        this.positionY = 85;
+        this.height = 20;
+        this.positionX = 50 - this.width /2;
+        this.positionY = 80;
         this.calculateboard = null;
         this.createBoard();
     }
     createBoard(){
         this.calculateboard = document.createElement('div');
         this.calculateboard.id = "sumPoints";
+        this.calculateboard.style.backgroundImage = "url(./img/scoreBoard.png)";
+        this.calculateboard.style.backgroundSize = "cover";
         this.calculateboard.style.width = this.width + "vw";
         this.calculateboard.style.height = this.height + "vh";
         this.calculateboard.style.left = this.positionX + "vw";
