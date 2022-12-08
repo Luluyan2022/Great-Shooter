@@ -59,16 +59,16 @@ body{
 }
 
 #score {
-    font-size: 3em;
-    color: rgb(13, 36, 13);
+    font-size: 5em;
+    position: absolute;
+    color: rgb(13, 36, 13);    
     text-align: center;    
-    margin-top: 3em;
+    margin: 3.5vh 5.3vw;  
     
  }
 
- #sumPoints{
-    position: absolute;
-    
+ #sumPoints{        
+    margin-left: 42vw;     
 }
 
 #page-gameover{

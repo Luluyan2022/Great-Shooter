@@ -38,27 +38,10 @@ class Game{
              const newBombsArray = this.bombsArray.filter((bomb) =>{
                 return bomb.notRemove
             }) 
-             this.bombsArray = newBombsArray; 
+             this.bombsArray = newBombsArray;                        
 
-            //update obstacles
-            this.bombsArray.forEach(bombInstance => {
-                 //prevent too many bombs on the screen
-                 setTimeout(() => {
-                    bombInstance.newBomb.remove();
-                    this.bombsArray.shift();
-                }, 2000);               
-               this.targetsArray.forEach(targetInstance => { 
-                //remove the targets after a certain time if they weren't shot
-                    setTimeout(() => {
-                        targetInstance.newTarget.remove();
-                        this.targetsArray.shift();
-                    }, 2000);
-                });                
-            });  
+        }, 300);
 
-        }, 500);
-
-        //update the bullets
         setInterval(() => {
 
             this.bulletsArray.forEach(bulletInstance => {
@@ -77,13 +60,15 @@ class Game{
                         bulletInstance.positionY < targetInstance.positionY + targetInstance.height &&
                         bulletInstance.positionY + bulletInstance.height > targetInstance.positionY
                         ) {
-                        console.log("collision 1 detected!");
+                        //console.log("collision targets detected!");
                         this.board.calculateSumPoints(); 
 
                         //remove the targets who were shot by shooter and the bullets 
                         document.getElementById('shot-audio').play();
-                        targetInstance.newTarget.remove();                        
+                        targetInstance.newTarget.remove();  
+                        targetInstance.notRemove = false;                      
                         bulletInstance.newBullet.remove();
+                                           
                     };
                 })                
                 this.bombsArray.forEach(bombInstance =>{
@@ -93,9 +78,10 @@ class Game{
                         bulletInstance.positionY < bombInstance.positionY + bombInstance.height &&
                         bulletInstance.positionY + bulletInstance.height > bombInstance.positionY
                         ) {
-                        //console.log("collision detected!");
+                        //console.log("collision bombs detected!");
+                        bombInstance.notRemove = false;
                         document.getElementById('exploded-audio').play();
-                        //setTimeout(() => { location.href = `./gameOver.html` }, 2000);
+                        setTimeout(() => { location.href = `./gameOver.html` }, 2000);
                     }
                 })
             });
@@ -201,7 +187,7 @@ class Target{
         setTimeout(() => {
             this.notRemove = false;
             this.newTarget.remove();
-        },1500)
+        },4000)
     }     
 }                 
  
@@ -240,7 +226,7 @@ class Bullet{
     constructor(shooterPositionX){
         this.newBullet = null;
         this.width = 1;
-        this.height = 8;
+        this.height = 5;
         this.positionX = shooterPositionX - this.width/2;
         this.positionY = 25;
         this.createBullet();
@@ -286,12 +272,16 @@ class Calculateboard{
         this.calculateboard.style.bottom = this.positionY + "vh"
         const boardElm = document.getElementById('board');
         boardElm.appendChild(this.calculateboard);       
-        this.calculateboard.innerHTML = '<div id = "sumPoints"><p><span id="score">0</span></p></div>';
+        this.calculateboard.innerHTML = '<p><span id="score">00</span></p>';
     }
-    calculateSumPoints() {
-        this.points = points;
+    calculateSumPoints() {       
         this.points += 1; 
-        document.getElementById('score').innerHTML = this.points;        
+        if(this.points > 10){
+            this.calculateboard.querySelector('p span').innerHTML = this.points + 1;        
+        }else{
+            this.calculateboard.querySelector('p span').innerHTML = ((this.points + 1) * 10 / 1000).toFixed(2).slice(2,4);
+        }
+        
     }
 }
 
